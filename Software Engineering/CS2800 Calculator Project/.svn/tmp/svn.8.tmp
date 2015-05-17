@@ -1,0 +1,51 @@
+package calc;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JRadioButton;
+
+/**
+ * 
+ */
+
+/**
+ * @author Piravin Satkunarajah
+ *
+ */
+public class CalcController {
+    
+    private CalcModel model = new CalcModel();
+    private CalcView view = new CalcView();
+    private boolean isInfix;
+    
+    public CalcController() {
+        view.addCalculateListener(new CalculateListener());
+        view.addRadioListener(new RadioListener());
+        view.setVisible(true);
+    }
+       
+    public static void main(String[] args) {
+        new CalcController();
+    }
+    
+    private class CalculateListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                String answer = " " + model.evaluate(view.getUserInput(), isInfix);
+                view.setAnswer(answer);
+            } catch (InvalidExpressionException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+    
+    private class RadioListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            isInfix = !((JRadioButton)e.getSource()).isSelected();
+        }
+    }
+    
+    
+
+}

@@ -1,0 +1,53 @@
+/**
+ * 
+ */
+package calc;
+
+/**
+ * @author Piravin Satkunarajah
+ *
+ */
+public class NumStack {
+    
+    /**
+     * An instance variable of Stack.
+     */
+    private Stack numStack = new Stack();
+
+    /**
+     * Adds a new float value into NumStack.
+     * @param i - float value
+     */
+    public void push(float i) {
+
+        numStack.push(new Entry(i));        
+    }
+
+    /**
+     *The pop function returns newest float in the stack
+     *and removes it afterwards.
+     * @return newest float and removes it
+     * @throws EmptyStackException No entries in the stack
+     * @throws BadTypeException 
+     */
+    public float pop() throws EmptyStackException, BadTypeException {
+        
+        return numStack.pop().getValue();
+    }
+
+
+    /**
+     * The isEmpty functions returns if the Stack is empty or not
+     * @return True if size zero else false
+     */
+    public boolean isEmpty() {
+       
+        if (numStack.size() == 0) {
+            return true;
+        }
+        else {
+        return false;
+        }
+    }
+
+}

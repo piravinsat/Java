@@ -1,0 +1,112 @@
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import calc.Calculator;
+import calc.InvalidExpressionException;
+import calc.RevPolishCalc;
+
+/**
+ * 
+ */
+
+/**
+ * @author Piravin Satkunarajah
+ *
+ */
+public class TestRevPolishCalc {
+    
+    /**
+     * An object of the Calculator class
+     */
+    
+    private Calculator rev; //Created NumStack class.
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp(){
+        rev = new RevPolishCalc();
+    }
+
+    @Test(expected=InvalidExpressionException.class)
+    public void noInput() throws InvalidExpressionException {      
+        rev.evaluate("");
+        fail();
+        //Failed because it needs the InvalidExpressionException thrown.
+        //Complies but it gives an AssertionError instead.
+        //Test succeeded by adding a if statement
+        //which returns a exception when string is "".           
+    }
+    
+    @Test(expected=InvalidExpressionException.class)
+    public void spaceInput() throws InvalidExpressionException {
+        rev.evaluate(" ");
+        fail();
+        //Complies but it gives an AssertionError instead.
+        //Test succeeded by changing the condition to the
+        //if statement to when string is empty when trimmed.
+    }
+    
+    @Test(expected=InvalidExpressionException.class)
+    public void zeroInput() throws InvalidExpressionException {
+        assertEquals("TEST3: Inputting a 0", 0, rev.evaluate("0"), 0.001);
+        //Complies but it gives an AssertionError instead.
+        //Test succeeded by adding a condition to the if
+        //statement if the string equalling "0".
+    }
+    
+    @Test(expected=InvalidExpressionException.class)
+    public void noOpr() throws InvalidExpressionException {
+        rev.evaluate("3 2");
+        fail();
+        //Complies but it gives an AssertionError instead.
+        //Test succeeded by adding a boolean which becomes true when a symbol is used
+    }
+    
+    @Test(expected=InvalidExpressionException.class)
+    public void inFixExp() throws InvalidExpressionException {
+        rev.evaluate("3 + 2");
+        fail();
+        //Complies but it gives an AssertionError instead.
+        //Test succeeded by adding a catch 
+        //for a InvalidExpressionException when an inFix
+        //expression is inputted.
+    }
+    
+    @Test
+    public void plusExp() throws InvalidExpressionException {
+        assertEquals("TEST6: 3 2 +", 5.0f, rev.evaluate("3 2 +"), 0.001);
+        //Complies but gives an InvalidExpressionException.
+        //Test succeeded by adding a condition which adds two floats when
+        //the operation of the stack is Symbol.PLUS.
+    }
+    
+    @Test
+    public void minusExp() throws InvalidExpressionException {
+        assertEquals("TEST7: 3 2 -", 1.0f, rev.evaluate("3 2 -"), 0.001);
+        //Complies but gives an InvalidExpressionException.
+        //Test succeeded by adding a condition which minuses two floats
+        //when the operation of the stack is Symbol.MINUS.
+    }
+    
+    @Test
+    public void timesExp() throws InvalidExpressionException {
+        assertEquals("TEST8: 3 2 *", 6.0f, rev.evaluate("3 2 *"), 0.001);
+        //Complies but gives an InvalidExpressionException.
+        //Test succeeded by adding a condition which times two floats
+        //when the operation of the stack is Symbol.TIMES.
+    }
+    
+    @Test
+    public void divideExp() throws InvalidExpressionException {
+        assertEquals("TEST9: 6 2 /", 3.0f, rev.evaluate("6 2 /"), 0.001);
+        //Complies but gives an InvalidExpressionException.
+        //Test succeeded by adding a condition which divides two floats
+        //when the operation of the stack
+    }
+
+
+}

@@ -1,0 +1,18 @@
+package calc;
+
+public class CalcModel {
+
+    private Calculator revPolish = new RevPolishCalc();
+    private Calculator standard = new StandardCalc();
+    
+    public float evaluate(String expr, boolean infix) 
+            throws InvalidExpressionException {
+        
+        if (infix) {
+            return standard.evaluate(expr);
+        }
+        else {
+            return revPolish.evaluate(expr);
+        }
+    }
+}

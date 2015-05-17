@@ -1,0 +1,13 @@
+package calc;
+
+/**
+ * The interface for RevPolishCalc and StandardCalc which allows the
+ * calculator of String expressions.
+ * @author Piravin Satkunarajah
+ */
+
+public interface Calculator {
+    
+    public float evaluate(String what) throws InvalidExpressionException;
+    
+}
