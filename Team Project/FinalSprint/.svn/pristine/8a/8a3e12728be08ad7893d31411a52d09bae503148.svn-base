@@ -1,0 +1,41 @@
+package events;
+
+import agents.Customer;
+import agents.Product;
+import agents.Thief;
+
+/**
+ * @author Group 3
+ */
+public class StealProduct extends Event {
+
+    /**
+     * Customer that does the looting.
+     */
+    private Thief thief;
+    /**
+     * Loot to be stolen.
+     */
+    private int stockID;
+    /**
+     * Steals a product.
+     * @param time The current simulation time.
+     * @param c The customer that is doing the stealing.
+     * @param sID The unique stock ID of the product being stolen.
+     */
+    public StealProduct(final int time, final Customer c, final int sID) {
+        super(time);
+        thief = (Thief) c;
+        stockID = sID;
+    }
+    /**
+     * Execute the event.
+     */
+    @Override
+    public final void execute() {
+        // Steal an item
+        Product p = new Product(stockID);
+        thief.stealItem(p);
+    }
+
+}

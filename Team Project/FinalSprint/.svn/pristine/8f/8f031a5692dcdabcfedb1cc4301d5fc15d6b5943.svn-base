@@ -1,0 +1,79 @@
+package agents;
+
+import java.util.List;
+import java.util.Random;
+
+/**
+ * Class that represents a customer that steals items.
+ * <p>
+ * @author Group 3
+ */
+public class Thief extends Customer {
+
+    /**
+     * Baggage for stolen items.
+     */
+    private Baggage thiefBaggage;
+
+    /**
+     * Creates a Thief object.
+     * <p>
+     * Thieves are Customers that have a set of products they steal.
+     * @param id Unique ID
+     * @param fname the customer's first name.
+     * @param lname the customer's last name.
+     */
+    public Thief(final int id, final String fname, final String lname) {
+        super(id, fname, lname);
+        thiefBaggage = new Baggage();
+        setThiefList();
+    }
+
+    /* (non-Javadoc)
+     * @see agents.Customer#reset()
+     */
+    @Override
+    public final void reset() {
+        super.reset();
+        this.setThiefList();
+    }
+
+    /**
+     * Creates the list of products that will be stolen.
+     */
+    private void setThiefList() {
+        //Clears the old shopping list
+        thiefBaggage.getShoppingList().clear();
+        Random rnd = new Random();
+        List<Integer> shpinglst = super.getBaggage().getShoppingList();
+        int noToBeStolen = rnd.nextInt(shpinglst.size()) + 1;
+        for (int i = 0; i < noToBeStolen; i++) {
+            int p = shpinglst.remove(rnd.nextInt(shpinglst.size()));
+            thiefBaggage.getShoppingList().add(p);
+        }
+    }
+    /**
+     * @return True for thieves, false for customers.
+     */
+    @Override
+    public final boolean isThief() {
+        return true;
+    }
+    /**
+     * Adds the item to the thief's basket.
+     * <p>
+     * @param p the product being taken.
+     */
+    public final void stealItem(final Product p) {
+        thiefBaggage.addToBasket(p);
+    }
+    /**
+     * Returns the thief's baggage.
+     * <p>
+     * @return the thief's baggage.
+     */
+    public final Baggage getThiefBaggage() {
+        return thiefBaggage;
+    }
+
+}

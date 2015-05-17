@@ -1,0 +1,281 @@
+package mvc;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JRadioButton;
+import javax.swing.JButton;
+
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.data.statistics.HistogramType;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import javax.swing.border.Border;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.BevelBorder;
+
+/**
+ * Class that contains the Graphical User Interface for the Supermarket
+ * Simulation.
+ * <p>
+ * @author Luigi Pardey
+ *
+ */
+public class View {
+
+    /**
+     * JFrame object to display the window.
+     */
+    private JFrame frmSupermarketSimulation;
+    /**
+     * Contains data input by the user for the number of customers to model.
+     */
+    private JTextField textCustomers;
+    /**
+     * Contains data input by the user for the number of checkouts to model.
+     */
+    private JTextField textCheckouts;
+    /**
+     * Contains data input by the user for the number of days to model.
+     */
+    private JTextField textDays;
+    /**
+     * Button to run the simulation.
+     */
+    private JButton buttonRun;
+    /**
+     * Radio Button grouping so the buttons act mutually exclusively.
+     */
+    private ButtonGroup radioGroup;
+    /**
+     * Selects the simulation model to use.
+     * <p>
+     * Models the simulation as having a single queue for all the checkouts.
+     */
+    private JRadioButton radioSingle;
+    /**
+     * Selects the simulation model to use.
+     * <p>
+     * Models the simulation as having one queue for each checkout.
+     */
+    private JRadioButton radioMulti;
+    /**
+     * JPanel that holds the chart.
+     */
+    private JPanel graphPanel;
+    /**
+     * The Chart panel.
+     * <p>
+     * Goes inside the JPanel graphPanel. Contains the JFreeChart graph.
+     */
+    private ChartPanel chartPanel;
+    /**
+     * Graph to show waiting times.
+     */
+    private JFreeChart graph;
+    /**
+     * Data to be output in the histogram.
+     */
+    private HistogramDataset dataset;
+    /**
+     * Create the application window.
+     */
+    public View() {
+        initialize();
+    }
+    /**
+     * Adds an action listener to the Run button.
+     * <p>
+     * The Run button is the button in the GUI window labelled "Simulate".
+     * It should be used to run the simulation with the parameters in the
+     * text boxes.
+     * <p>
+     * @param al the action listener to register.
+     */
+    public final void addRunListener(final ActionListener al) {
+        buttonRun.addActionListener(al);
+    }
+    /**
+     * Returns the string in the text box corresponding to the number of
+     * customers to simulate.
+     * <p>
+     * @return the value for number of customers.
+     */
+    public final String getCustomers() {
+        return textCustomers.getText();
+    }
+    /**
+     * Returns the string in the text box corresponding to the number of
+     * checkouts to model.
+     * <p>
+     * @return the value for number of checkouts.
+     */
+    public final String getCheckouts() {
+        return textCheckouts.getText();
+    }
+    /**
+     * Returns the string in the text box corresponding to the number of
+     * days to model.
+     * <p>
+     * @return the value for number of days.
+     */
+    public final String getDays() {
+        return textDays.getText();
+    }
+    /**
+     * Initialise the contents of the frame.
+     */
+    private void initialize() {
+        // Initialise the JFrame
+        frmSupermarketSimulation = new JFrame();
+        frmSupermarketSimulation.setTitle("Supermarket Simulation");
+        frmSupermarketSimulation.setResizable(false);
+        frmSupermarketSimulation.setBounds(100, 100, 740, 360);
+        frmSupermarketSimulation.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmSupermarketSimulation.getContentPane().setLayout(null);
+
+        // Initialise the graph
+        dataset = new HistogramDataset();
+
+        graph = ChartFactory.createHistogram(
+                "Distribution of waiting times",
+                "Waiting Times",
+                "Frequency",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false
+        );
+        // Initialise the JPanel
+        JPanel panel = new JPanel();
+        panel.setBounds(12, 12, 700, 304);
+        frmSupermarketSimulation.getContentPane().add(panel);
+        panel.setLayout(null);
+
+        // Initialise the label for Customers
+        JLabel labelCustomer = new JLabel("Customers");
+        labelCustomer.setBounds(12, 12, 100, 30);
+        panel.add(labelCustomer);
+
+        // Initialise the label for Checkouts
+        JLabel labelCheckout = new JLabel("Checkouts");
+        labelCheckout.setBounds(12, 54, 100, 30);
+        panel.add(labelCheckout);
+
+        // Initialise the label for Days
+        JLabel labelDays = new JLabel("Days");
+        labelDays.setBounds(12, 96, 100, 30);
+        panel.add(labelDays);
+
+        // Initialise the text box for Customers
+        textCustomers = new JTextField();
+        textCustomers.setText("100");
+        textCustomers.setBounds(112, 12, 120, 30);
+        panel.add(textCustomers);
+        textCustomers.setColumns(10);
+
+        // Initialise the text box for Checkouts
+        textCheckouts = new JTextField();
+        textCheckouts.setText("1");
+        textCheckouts.setBounds(112, 54, 120, 30);
+        panel.add(textCheckouts);
+        textCheckouts.setColumns(10);
+
+        // Initialise the text box for Days
+        textDays = new JTextField();
+        textDays.setText("1");
+        textDays.setBounds(112, 96, 120, 30);
+        panel.add(textDays);
+        textDays.setColumns(10);
+
+        // Initialise the Single Queue radio button
+        radioSingle = new JRadioButton("Single Queue");
+        radioSingle.setSelected(true);
+        radioSingle.setBounds(83, 140, 149, 30);
+        panel.add(radioSingle);
+
+        // Initialise the Multi Queue radio button
+        radioMulti = new JRadioButton("Multi Queue");
+        radioMulti.setBounds(83, 174, 149, 30);
+        panel.add(radioMulti);
+
+        // Group the radio buttons
+        radioGroup = new ButtonGroup();
+        radioGroup.add(radioSingle);
+        radioGroup.add(radioMulti);
+
+        // Initialise the Run button
+        buttonRun = new JButton("Simulate");
+        buttonRun.setBounds(83, 212, 117, 40);
+        panel.add(buttonRun);
+        panel.validate();
+
+        // Initialise the chart panel
+        graphPanel = new JPanel();
+        graphPanel.setBorder(
+                new SoftBevelBorder(
+                        BevelBorder.LOWERED,
+                        null,
+                        null,
+                        null,
+                        null
+                )
+        );
+        graphPanel.setBounds(243, 12, 445, 280);
+        graphPanel.setLayout(new BorderLayout());
+        panel.add(graphPanel);
+
+        chartPanel = new ChartPanel(graph);
+        graphPanel.add(chartPanel, BorderLayout.CENTER);
+    }
+    /**
+     * Returns whether the radio button for Single Queue is selected.
+     * <p>
+     * The alternative radio button corresponds to Multi Queue. This method
+     * may be used interchangeably for both, with complementary values
+     * since the radio buttons are mutually exclusive. This means, when
+     * this method returns true means Single Queue is selected, and Multi
+     * Queue is not, and viceversa.
+     * <p>
+     * @return true if single queue is selected.
+     */
+    public final boolean isSingleQueue() {
+        return radioSingle.isSelected();
+    }
+    /**
+     * Inputs data to a histogram from an array of shopping times.
+     * <p>
+     * This method also removes the old data set so values don't overlap.
+     * <p>
+     * @param shopping the array of shopping times.
+     * @param queueing the array of queueing times.
+     */
+    public final void populateHistogram(
+            final double[] shopping, final double[] queueing) {
+        final int bins = graphPanel.getWidth() / shopping.length;
+        dataset.addSeries("Shopping", shopping, bins);
+        dataset.addSeries("Queueing", queueing, bins);
+    }
+    /**
+     * Set the visibility of the application window.
+     * <p>
+     * @param b the value for visibility to set (true | false).
+     */
+    public final void setVisible(final boolean b) {
+        frmSupermarketSimulation.setVisible(b);
+    }
+}

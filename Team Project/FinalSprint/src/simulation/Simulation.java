@@ -1,0 +1,625 @@
+package simulation;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import agents.Customer;
+import agents.Thief;
+import arenas.Arena;
+import database.Database;
+import events.CustomerArrives;
+import events.Event;
+
+/**
+ * Abstract interface for an event-based simulation.
+ * <p>
+ * The simulations will model a supermarket, with either a single
+ * queue for all the tills, or one queue for each till.
+ * <p>
+ * @author Luigi Pardey
+ * @see SingleQueue
+ * @see MultiQueue
+ */
+public abstract class Simulation {
+    /**
+     * The current simulation day.
+     * <p>
+     * This value represents the current day in the simulation, which
+     * corresponds to how many days has the simulation modelled.
+     */
+    private static int day;
+    /**
+     * The current time-step.
+     * <p>
+     * In this event-based simulation, the time is measured in integer
+     * time intervals, each of which corresponds to the time-step that the
+     * last event finished execution.
+     */
+    private int simTime;
+    /**
+     * The conversion factor between minutes and simulation time-steps.
+     * <p>
+     * To convert to minutes, divide the time-step by the conversion factor.
+     * To convert to time-steps, multiply the minutes by the conversion factor.
+     */
+    public static final int CONVERSION_FACTOR = 60;
+    /**
+     * Number of customers to serve before finishing the simulation.
+     */
+    private int nCustomers;
+    /**
+     * Number of tills available.
+     */
+    private int nTills;
+    /**
+     * List of arenas in this simulation.
+     */
+    private List<Arena> arenas;
+    /**
+     * List of customers at the end of this simulation.
+     * <p>
+     * This list is only used for output and reports.
+     */
+    private List<Customer> customers;
+    /**
+     * The list of customers that will be in the supermarket on the current day.
+     */
+    private List<Customer> dayCustomers;
+    /**
+     * Holds references to the Customer objects that are suspicious.
+     */
+    private List<Customer> potentialThieves;
+    /**
+     * Creates a simulation object.
+     * <p>
+     * @param n number of customers
+     * @param t number of tills.
+     */
+    public Simulation(final int n, final int t) {
+        setMaxCustomers(n);
+        setNumTills(t);
+        loadArenas();
+        loadCustomers();
+        simTime = 0;
+        potentialThieves = new ArrayList<Customer>();
+    }
+    /**
+     * Returns the list of arenas in this simulation.
+     * <p>
+     * @return the arenas of this simulation.
+     */
+    public final List<Arena> getArenas() {
+        return arenas;
+    }
+    /**
+     * Returns the average value of the customers' queueing times.
+     * <p>
+     * The average is computed as the sum of all the queueing times divided
+     * by the amount of customers that passed through the supermarket.
+     * <p>
+     * @return the average queueing time.
+     */
+    public final double getAverageQueueing() {
+        int cumul = 0;
+        for (double t : getQueueTimes()) {
+            cumul += t;
+        }
+        double result = (double) cumul / (double) nCustomers;
+        return result;
+    }
+    /**
+     * Returns the average value of the customers' shopping times.
+     * <p>
+     * The average is computed as the sum of all the waiting times divided
+     * by the amount of customers that passed through the supermarket.
+     * <p>
+     * @return the average waiting time.
+     */
+    public final double getAverageWaiting() {
+        int cumul = 0;
+        for (double t : getWaitingTimes()) {
+            cumul += t;
+        }
+        double result = (double) cumul / (double) nCustomers;
+        return result;
+    }
+    /**
+     * Returns the list of customers at the end of the simulation.
+     * <p>
+     * @return the list of customers
+     */
+    public final List<Customer> getCustomerList() {
+        return customers;
+    }
+    /**
+     * Returns the day number for the current simulation.
+     * <p>
+     * The day number corresponds to the current day in the simulation, which
+     * corresponds to how many days have been modelled by the simulation, or
+     * how many days has the store opened for business.
+     * <p>
+     * @return the current simulation day.
+     */
+    public static int getDay() {
+        return day;
+    }
+    /**
+     * Returns the maximum number of customers to serve in this simulation.
+     * <p>
+     * @return the number of Customers to serve
+     */
+    public final int getMaxCustomers() {
+        return nCustomers;
+    }
+    /**
+     * Returns the number of available checkout counters.
+     * <p>
+     * @return the number of available Tills
+     */
+    public final int getNumTills() {
+        return nTills;
+    }
+    /**
+     * Returns the queueing times for all the customers.
+     * <p>
+     * The times are given in an array of integers, according to the order of
+     * the customers in the customer list, being the order in which they arrive
+     * to the end of the simulation.
+     * <p>
+     * @return the queueing times
+     */
+    public final int[] getQueueTimes() {
+        int[] result = new int[dayCustomers.size()];
+        int i = 0;
+        for (Customer c : dayCustomers) {
+            result[i] = c.getBaggage().getTimeQueueing();
+            i++;
+        }
+        return result;
+    }
+    /**
+     * Returns the waiting times for all the customers.
+     * <p>
+     * The times are given in an array of integers, according to the order of
+     * the customers in the customer list, being the order in which they arrive
+     * to the end of the simulation.
+     * <p>
+     * @return the waiting times
+     */
+    public final int[] getWaitingTimes() {
+        int[] result = new int[dayCustomers.size()];
+        int i = 0;
+        for (Customer c : dayCustomers) {
+            result[i] = c.getBaggage().getTimeShopping();
+            i++;
+        }
+        return result;
+    }
+    /**
+     * Routine that checks whether the simulation should continue
+     * running.
+     * <p>
+     * The simulation will continue running as long as the event
+     * queue is populated (not empty), and if it is, it will stop
+     * running if the number of customers served is at least the
+     * target number of customers to serve.
+     * <p>
+     * @return true if the simulation is running.
+     */
+    private boolean isRunning() {
+        Arena end = getArenas().get(getArenas().size() - 1);
+        int served = end.getCustomerCount();
+        // return served != getMaxCustomers();
+        return served != dayCustomers.size();
+    }
+    /**
+     * Initialises and set a the Arenas and their relationships.
+     */
+    protected abstract void loadArenas();
+
+    /**
+     * Load the customer list.
+     */
+    protected final void loadCustomers() {
+        this.setCustomerList(new ArrayList<Customer>());
+        this.dayCustomers = new ArrayList<Customer>();
+        try {
+            Database db = Database.getDatabase();
+            String query = "SELECT * FROM customers ORDER BY customer_id";
+            ResultSet rs = db.getData(query);
+            int count = 0;
+            while (rs.next() && count < nCustomers) {
+                String fname = rs.getString("first_name");
+                String lname = rs.getString("last_name");
+                int id = rs.getInt("customer_id");
+                double thiefProb = rs.getDouble("thief_prob");
+                Customer current;
+                if (thiefProb < 1) {
+                    current = new Customer(id, fname, lname);
+                } else {
+                    current = new Thief(id, fname, lname);
+                }
+                getCustomerList().add(current);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Routine that selects a random number of customers that will visit the
+     * supermarket on the current simulation-day.
+     * <p>
+     * Once the number of customers expected to visit the supermarket is
+     * generated, the list that holds the day's customers will be populated
+     * with a random selection of customers from the customer list.
+     */
+    protected final void randomiseList() {
+        // Initialise the random number generator
+        Random rng = new Random();
+        // Probability of a customer to appear in the supermarket today
+        final double p = 0.33;
+        for (Customer c : customers) {
+            double x = rng.nextDouble();
+            if (x < p) {
+                dayCustomers.add(c);
+                c.getBaggage().incrementVisits();
+            }
+        }
+    }
+    /**
+     * Routine that resets the values of the variables assigned during the
+     * simulation back to their defaults.
+     */
+    public final void resetSimulation() {
+        // Reset the customers' state.
+        Arena end = arenas.get(arenas.size() - 1);
+        for (Customer c : end.getCustomerList()) { c.reset(); }
+        // Reset the arenas' state.
+        for (Arena a : arenas) { a.reset(); }
+        // Reset the day customers' state.
+        dayCustomers.clear();
+        // Reset the event queue
+        Event.QUEUE.clear();
+        // Reset the simulation time
+        simTime = 0;
+    }
+    /**
+     * Routine that outputs many values useful for reporting the state
+     * of the simulation once it is finished.
+     */
+    public final void report() {
+        try {
+            String sql1 = "SELECT * FROM products";
+            Database db = Database.getDatabase();
+            ResultSet products = db.getData(sql1);
+            while (products.next()) {
+                // Product ID
+                int pID = products.getInt("product_id");
+
+                // Remove expired products from stock;
+                int life = products.getInt("shelf_life");
+                String expired = "DELETE FROM stock"
+                        + " WHERE product_id = " + pID
+                        + " AND day_added < " + (day - life);
+                // The number returned corresponds to the deleted items
+                int wasted = db.updateData(expired);
+
+                // Day purchases
+                int sold = 0;
+                String count = "SELECT count(*) FROM purchases"
+                        + " WHERE product_id = " + pID
+                        + " AND date = " + day;
+                ResultSet sellCount = db.getData(count);
+                // If the query returns, it's the sell count
+                if (sellCount.next()) {
+                    sold = sellCount.getInt("count");
+                }
+
+                // Record the purchase
+                String values = "DEFAULT," + day + ", " + pID + ", "
+                        + sold + ", " + wasted;
+                String insert = "INSERT INTO daily_purchases"
+                        + " VALUES (" + values + ")";
+                db.updateData(insert);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        mostProfitableCustomers();
+    }
+    /**
+     * Runs the simulation with the parameters used to create it.
+     */
+    public final void runSimulation() {
+        Event.QUEUE.clear();
+        Arena start = arenas.get(0);
+        randomiseList();
+        for (Customer c : dayCustomers) {
+            Event arrive = new CustomerArrives(simTime, c, start);
+            arrive.schedule();
+        }
+        int deadlockCounter = 0;
+        final int deadlockMax = 10;
+        while (isRunning()) {
+            if (deadlockCounter > deadlockMax) {
+                System.out.println("Simulation stalled. Terminating");
+                break;
+            }
+            // Poll the events corresponding to the current time step
+            int tStep = simTime;
+            while (!Event.QUEUE.isEmpty() && tStep == simTime) {
+                Event current = Event.QUEUE.pollFirst();
+                current.execute();
+                simTime = current.getTime();
+                deadlockCounter = 0;
+            }
+            // Update the state of each arena.
+            for (Arena a : getArenas()) {
+                a.update(simTime);
+            }
+            deadlockCounter++;
+        }
+    }
+    /**
+     * Sets the list of arenas for this simulation.
+     * <p>
+     * @param a the arenas to set
+     */
+    protected final void setArenas(final List<Arena> a) {
+        this.arenas = a;
+    }
+    /**
+     * Sets the list of customers for this simulation.
+     * @param c the customers to set
+     */
+    protected final void setCustomerList(final List<Customer> c) {
+        this.customers = c;
+    }
+    /**
+     * Sets the value of the current simulation day.
+     * <p>
+     * The day number corresponds to the current day in the simulation, which
+     * corresponds to how many days have been modelled by the simulation, or
+     * how many days has the store opened for business.
+     * <p>
+     * @param d the value of day to set.
+     */
+    public static void setDay(final int d) {
+        day = d;
+    }
+    /**
+     * Sets the maximum number of customers to serve in this simulation.
+     * <p>
+     * If the number set exceeds the number of profiles in the database,
+     * the maximum number will be set to the number of existing profiles.
+     * <p>
+     * @param nCust the customers to set
+     */
+    protected final void setMaxCustomers(final int nCust) {
+        final int dbMax = 100;
+        if (nCust > dbMax) {
+            this.nCustomers = dbMax;
+        } else {
+            this.nCustomers = nCust;
+        }
+    }
+    /**
+     * Sets the number of checkout counters for this simulation.
+     * <p>
+     * @param tills the tills to set
+     */
+    protected final void setNumTills(final int tills) {
+        this.nTills = tills;
+    }
+
+    /**
+     * Gets which customer is the most profitable
+     * and then outputs it as a report.
+     * Not finished at the moment, just typing it as an idea.
+     */
+    private void mostProfitableCustomers() {
+        Database db = Database.getDatabase();
+
+        //Variables for holding the amount spend and profit of a customer
+        double mostProCustSpend = 0.00;
+        double mostProCustProfit = 0.00;
+
+        //Prints out the title of the report
+        System.out.println("Most profitable customers "
+                + "(in order by most profit): ");
+
+        //SQL query arranging customer by highest amount of profit
+        String query = "SELECT p.customer_id, c.first_name, c.last_name,"
+                + " sum(spend) AS spend, sum(profit) AS profit"
+                + " FROM purchases AS p, customers AS c"
+                + " WHERE c.customer_id = p.customer_id"
+                + " GROUP BY p.customer_id, c.last_name, c.first_name"
+                + " ORDER BY profit DESC";
+        ResultSet rs = db.getData(query);
+        //Top 5 customers
+        final int top = 5;
+        String format = "%-5s %-15s %-15s %-20s %-20s %-10s\n";
+        System.out.printf(format,
+                "ID", "NAME", "SURNAME", "SPEND", "PROFIT", "QUEUEING");
+        try {
+            for (int i = 0; i < top; i++) {
+                rs.next();
+                int customerID = rs.getInt("customer_id");
+                String mostValCustFN = rs.getString("first_name");
+                String mostValCustSN = rs.getString("last_name");
+                mostProCustSpend = rs.getDouble("spend");
+                mostProCustProfit = rs.getDouble("profit");
+
+                //Get average waiting times for that customer
+                Customer c  = customers.get(customerID - 1);
+                double avgWaitingTime = c.getBaggage().getAverageQueueing();
+                String s1 = "(" + customerID + ")";
+                String s2 = mostValCustFN;
+                String s3 = mostValCustSN;
+                String s4 = "£" + mostProCustSpend;
+                String s5 = "£" + mostProCustProfit;
+                String s6 = avgWaitingTime + " t";
+                System.out.printf(format, s1, s2, s3, s4, s5, s6);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Detect what customers have been stealing items
+     * and lists how much they have been stealing of each product.
+     */
+    public final void theftDetectionReport() {
+        //List customers who have been stealing
+        //List mean total theft of each product at each shop
+        String format = "%-10s %-15s %-15s %-5s %-10s %-5s %-5s \n";
+        Customer[] ca = new Customer[potentialThieves.size()];
+        potentialThieves.toArray(ca);
+        if (ca.length == 0) { return; }
+        quicksort(0, ca.length - 1, ca);
+        final int size = 50;
+        int bound = ca.length - 1;
+        int rank = 1;
+        System.out.println("Most Wanted Thieves");
+        System.out.printf(format,
+                "RANK", "NAME", "SURNAME", "ID", "SUSPICION", "VISITS", "%");
+        for (int i = bound; i > bound - size && i >= 0; i--) {
+            System.out.printf(format, rank++,
+                    ca[i].getFirstName(), ca[i].getLastName(),
+                    ca[i].getCustomerID(), ca[i].getSuspicion(),
+                    ca[i].getBaggage().getVisits(),
+                    (double) ca[i].getSuspicion()
+                    / (double) ca[i].getBaggage().getVisits());
+        }
+    }
+
+    /**
+     * Sorts an array of Customers.
+     * <p>
+     * Taken from:
+     * <p>
+     * http://www.vogella.com/articles/JavaAlgorithmsQuicksort/article.html
+     * <p>
+     * "Quicksort in Java" by Lars Vogel
+     * @param low lowest element index
+     * @param high highest element index
+     * @param ca array to sort.
+     */
+    private void quicksort(final int low, final int high, final Customer[] ca) {
+        int i = low, j = high;
+        // Get the pivot element from the middle of the list
+        int pivotPoint = low + (high - low) / 2;
+        double pivot =
+                (double) ca[pivotPoint].getSuspicion()
+                / (double) ca[pivotPoint].getBaggage().getVisits();
+
+        // Divide into two lists
+        while (i <= j) {
+            // If the current value from the left list is smaller then the pivot
+            // element then get the next element from the left list
+            while (((double) ca[i].getSuspicion()
+                    / (double) ca[i].getBaggage().getVisits()) < pivot) {
+                i++;
+            }
+            // If the current value from the right list is larger then the pivot
+            // element then get the next element from the right list
+            while (((double) ca[j].getSuspicion()
+                    / (double) ca[j].getBaggage().getVisits()) > pivot) {
+                j--;
+            }
+
+            // If we have found a values in the left list which is larger then
+            // the pivot element and if we have found a value in the right list
+            // which is smaller then the pivot element then we exchange the
+            // values.
+            // As we are done we can increase i and j
+            if (i <= j) {
+                exchange(i, j, ca);
+                i++;
+                j--;
+            }
+        }
+        // Recursion
+        if (low < j) {
+            quicksort(low, j, ca);
+        }
+        if (i < high) {
+            quicksort(i, high, ca);
+        }
+    }
+
+    /**
+     * Routine used by QuickSort to exchange two elements in an array.
+     * <p>
+     * @param i first element.
+     * @param j second element.
+     * @param ca destination array.
+     */
+    private void exchange(final int i, final int j, final Customer[] ca) {
+        Customer temp = ca[i];
+        ca[i] = ca[j];
+        ca[j] = temp;
+    }
+
+    /**
+     * Routine to detect which customers may be thieves.
+     * <p>
+     * This method checks which customers were in the store when at least one
+     * product was stolen from the shelves, and increases the suspicion.
+     */
+    public final void detectPotentialThieves() {
+        Database database = Database.getDatabase();
+        int  i = 1;
+        final int dbMax = 20;
+        try {
+            while (i <= dbMax) {
+                int purchased = 0;
+                String count = "SELECT count(*) FROM purchases "
+                             + "WHERE product_id = " + i + " "
+                             + "AND date = " + day;
+                ResultSet sellCount = database.getData(count);
+                if (sellCount.next()) {
+                    purchased = sellCount.getInt("count");
+                }
+                int currentStock = 0;
+                String stock = "SELECT count(*) FROM stock "
+                             + "WHERE product_id = " + i;
+                ResultSet rs = database.getData(stock);
+                if (rs.next()) {
+                    currentStock = rs.getInt("count");
+                }
+                int quantityAtStartOfDay = 0;
+                String instore = "SELECT max FROM products "
+                               + "WHERE product_id = " + i;
+                ResultSet set = database.getData(instore);
+                if (set.next()) {
+                    quantityAtStartOfDay = set.getInt("max");
+                }
+                // If an item is stolen, then it won't be recorded as purchased
+                // so if the current stock + the number purchases doesn't add up
+                // to the amount stocked at the start of the day, then there
+                // must've been some looting going on.
+                if (currentStock + purchased < quantityAtStartOfDay) {
+                    // If an item has been stolen then we treat each customer in
+                    // the store with equal suspicion.
+                    for (Customer c: dayCustomers) {
+                        if (!potentialThieves.contains(c)) {
+                            potentialThieves.add(c);
+                        }
+                        c.incrementSuspicion();
+                    }
+                    break;
+                }
+                i++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+}

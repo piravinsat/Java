@@ -1,0 +1,1153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.5.1">
+  <zoom_level>4</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>464</x>
+      <y>300</y>
+      <w>112</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>Sprint::Arena
+Abstract interface for
+different types of arenas.
+--
+*Attributes*
+-RNG: Random
+-arenaIDCounter: long
+-arenaID: long
+-customerCounter: int
+-customers: ArrayList&lt;Customer&gt;
+-linkedArenas: ArrayList&lt;Arena&gt;
+-sType: SimType
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Arena()
++initialise(): void
++getArenaID(): long
++getCustomerCount(): int
++getCustomerList(): ArrayList&lt;Customer&gt;
++getLinkedArenas(): ArrayList&lt;Arena&gt;
++getSimType(): SimType
++removeCustomer(c: Customer): void
++reset(): void
++setCustomer(c: Customer): void
++setLinkedArena(a: Arena): void
++setSimType(st: SimType): void
++update(simTime: int): void
++report(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>628</x>
+      <y>92</y>
+      <w>100</w>
+      <h>68</h>
+    </coordinates>
+    <panel_attributes>Sprint::SourceArena
+Models where Customers arrive
+upon entering the Supermarket.
+--
+*Attributes*
+-rng: Random
+-P: double="0.5"
+--
+*Responsibilities*
++initialise(): void
++update(simTime: int): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>628</x>
+      <y>168</y>
+      <w>100</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Sprint::FloorArena
+Models where Customers
+accumulate baggage.
+--
+*Attributes*
+--
+*Responsibilities*
++initialise(): void
++setCustomer(c: Customer): void
++restock(): void
++update(simTime: int): void
++emptyShoppingList(
+   shoppingList: List&lt;Integer&gt;,
+   simTime: int, c: Customer,
+   shouldSteal: boolean): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>628</x>
+      <y>272</y>
+      <w>100</w>
+      <h>68</h>
+    </coordinates>
+    <panel_attributes>Sprint::QueueArena
+Models where Customers wait
+to be served at a checkout.
+--
+*Attributes*
+-assigned: boolean
+--
+*Responsibilities*
++initialise(): void
++removeCustomer(c: Customer): void
++update(simTime: int): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>628</x>
+      <y>456</y>
+      <w>100</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>Sprint::EndArena
+Models where Customers arrive
+before leaving the Supermarket.
+--
+*Attributes*
+--
+*Responsibilities*
++initialise(): void
++update(simTime: int): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>628</x>
+      <y>348</y>
+      <w>100</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Sprint::PolicyArena
+Decision arena where
+Customers choose the best
+Arena to move to from here.
+--
+*Attributes*
+-locked: boolean
+--
+*Responsibilities*
++initialise(): void
++isEmpty(): boolean
++removeCustomer(c: Customer): void
++setCustomer(c: Customer): void
++setLock(): void
++update(simTime: int): void
++shortestQueue(): Arena</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>628</x>
+      <y>516</y>
+      <w>100</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>Sprint::CheckoutArena
+Models where Customers pay for all
+the items acquired at the Supermarket.
+--
+*Attributes*
+-MULTIPLIER: int=100
+-busy: boolean
+-scheduled: boolean
+-pareto: boolean
+-alpha: int
+-time: int
+--
+*Responsibilities*
++initialise(): void
++isEmpty(): boolean
++removeCustomer(c: Customer): void
++setCustomer(c: Customer): void
++setPareto(a: int): void
++update(simTime: int): void
++exponentialServiceTime(): double
++paretoServiceTime(): double</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>564</x>
+      <y>112</y>
+      <w>72</w>
+      <h>212</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;204;32;204;64;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>564</x>
+      <y>224</y>
+      <w>72</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;132;36;132;64;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>564</x>
+      <y>312</y>
+      <w>72</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;72;40;72;64;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>564</x>
+      <y>400</y>
+      <w>72</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;64;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>564</x>
+      <y>428</y>
+      <w>72</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;40;12;64;48</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>564</x>
+      <y>456</y>
+      <w>72</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;40;12;64;100</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>352</x>
+      <y>496</y>
+      <w>108</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Sprint::Agent
+Abstract interface for
+different types of agents.
+--
+*Attributes*
+-identifier: long
+-agentID: long
+-agentType: AgentType
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Agent(aType: AgentType)
++update(simTime: int): void
++getAgentID: long
++getAgentType: AgentType</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>448</x>
+      <y>472</y>
+      <w>48</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>40;12;40;64;12;64</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>348</x>
+      <y>720</y>
+      <w>80</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Sprint::AgentType
+Representing the possible
+classifications of an Agent.
+--
+CUSTOMER
+STAFF</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>504</x>
+      <y>504</y>
+      <w>100</w>
+      <h>300</h>
+    </coordinates>
+    <panel_attributes>Sprint::Baggage
+Models a collection of
+time values for each agent.
+--
+*Attributes*
+-visits: int
+-cumulativeQueueing: int
+-basket: List&lt;Product&gt;
+-shoppingList: List&lt;Integer&gt;
+-baggageIDCounter: int
+-baggageID: int
+-enteredArena: int
+-timeStarted: int
+-timeFinished: int
+-timeShopping: int
+-timeQueueing: int
+-timeInArena: int
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Baggage()
++getItems(): int
++getID(): int
++addToBasket(p: Product): void
++addTimeInArena(time: int): void
++addTimeQueueing(time: int): void
++addTimeShopping(time: int): void
++getAverageQueueing(): double
++getBasket(): List&lt;Product&gt;
++getShoppingList(): List&lt;Integer&gt;
++getEnteredArena(): int
++getTimeFinished(): int
++getTimeInArena(): int
++getTimeQueueing(): int
++getTimeShopping(): int
++getTimeStarted(): int
++setEnteredArena(time: int): void
++setTimeFinished(time: int): void
++setTimeInArena(t: int): void
++setTimeQueueing(t: int): void
++setTimeShopping(t: int): void
++setTimeStarted(t: int): void
++reset(): void
++updateAverages(): void
++getVisits(): int
++incrementVisits(): void
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>200</x>
+      <y>568</y>
+      <w>88</w>
+      <h>216</h>
+    </coordinates>
+    <panel_attributes>Sprint::Customer
+Models one customer
+in the supermarket.
+--
+*Attributes*
+-customerID: long
+-firstName: String
+-lastName: String
+-ready: boolean
+-moving: boolean
+-shopping: boolean
+-baggage: Baggage
+-suspicionFactor: int
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Customer(id: int,
+   fname: String, lname: String)
++getBaggage(): Baggage
++getCustomerID(): long
++getFirstName(): String
++getLastName(): String
++getSuspicion(): int
++incrementSuspicion(): void
++isReady(): boolean
++isMoving(): boolean
++isShopping(): boolean
++isThief(): boolean
++setMoving(m: boolean): void
++setShopping(s: boolean): void
++setShoppingList(): void
++update(simTime: int): void
++updateBaggage(t: int): void
++updateQueueing(t: int): void
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>412</x>
+      <y>604</y>
+      <w>84</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Sprint::Product
+Models a product
+in the supermarket.
+--
+*Attributes*
+-name: String
+-price: double
+-cost: double
+-productID: int
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Product(pID: int)
++getProductID: int
++getName(): String
++getPrice(): double
++getCost(): double
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>300</x>
+      <y>608</y>
+      <w>88</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Sprint::Thief
+Models a customer that
+steals items in the supermarket.
+--
+*Attributes*
+-thiefBaggage: Baggage
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Thief(id: int,
+   fname: String, lname: String)
++reset(): void
++setThiefList(): void
++isThief(): boolean
++stealItem(p: Product): void
++getThiefBaggage(): Baggage</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>276</x>
+      <y>544</y>
+      <w>84</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>76;12;36;12;12;52</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>448</x>
+      <y>548</y>
+      <w>44</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;36;12;36;56</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>388</x>
+      <y>572</y>
+      <w>20</w>
+      <h>156</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;12;104;12;148</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>316</x>
+      <y>564</y>
+      <w>44</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>36;12;12;12;12;44</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>344</x>
+      <y>368</y>
+      <w>112</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Sprint::Database
+Models the object that interacts with
+the Database Management System.
+--
+*Attributes*
+-database: Database
+-connection: Connection
+-statement: Statement
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Database(dbName: String)
++getConnection(): Connection
++getData(query: getData): ResultSet
++updateData(query: String): int
++getDatabase(): Database</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>240</x>
+      <y>396</y>
+      <w>88</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>Sprint::Event
+Models the simulation's events.
+--
+*Attributes*
+-QUEUE: TreeSet&lt;Event&gt;
+-eventIDCounter: long
+-eventID: long
+-eventTime: int
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +Event(time: int)
++getTime(): int
++getID(): long
++schedule(): void
++compareTo(e: Event): int
++execute(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>264</x>
+      <y>488</y>
+      <w>96</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;12;40;88;40</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>292</x>
+      <y>344</y>
+      <w>180</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>12;52;12;12;172;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>116</x>
+      <y>316</y>
+      <w>104</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>Sprint::AcquireProduct
+Models a customer taking a product
+and putting it in their shopping basket.
+--
+*Attributes*
+-customer: Customer
+-productID: int
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +AcquireProduct(
+   time: int, c: Customer, pID: int)
++execute(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>4</x>
+      <y>400</y>
+      <w>92</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Sprint::CustomerArrives
+Models the arrival of a customer
+into the Supermarket.
+--
+*Attributes*
+-arena: Arena
+-customer: Customer
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +CustomerArrives(
+   time: int, c: Customer, a: Arena)
++execute(): void
++report(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>112</x>
+      <y>428</y>
+      <w>88</w>
+      <h>68</h>
+    </coordinates>
+    <panel_attributes>Sprint::CustomerLeaves
+Models the departure of a
+customer into the Supermarket.
+--
+*Attributes*
+-customer: Customer
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +CustomerLeaves(
+   time: int, c: Customer)
++execute(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>36</x>
+      <y>504</y>
+      <w>104</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Sprint::CustomerMoves
+Models the Event of moving a
+customer from Arena to Arena.
+--
+*Attributes*
+-referencer: Arena
+-arena: Arena
+-customer: Customer
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +CustomerMove(time: int,
+   c: Customer, a: Arena, ref: Arena)
++execute(): void
++report(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>92</x>
+      <y>608</y>
+      <w>88</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>Sprint::StealProduct
+Models the theft of a
+product in the Supermarket.
+--
+*Attributes*
+-thief: Thief
+-productID: int
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +StealProduct(
+   time: int, c: Customer, pID: int)
++execute(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>84</x>
+      <y>400</y>
+      <w>164</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>156;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>188</x>
+      <y>440</y>
+      <w>60</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>52;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>128</x>
+      <y>468</y>
+      <w>120</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>112;12;88;12;88;48;12;48</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>152</x>
+      <y>488</y>
+      <w>108</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>100;12;100;60;12;60;12;120</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>208</x>
+      <y>352</y>
+      <w>48</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>40;44;40;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>388</x>
+      <y>452</y>
+      <w>20</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>12;44;12;36;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>324</x>
+      <y>172</y>
+      <w>104</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Sprint::MultiQueue
+Models the simulation of a
+supermarket with different arenas.
+--
+*Attributes*
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +MultiQueue(c: int, t: int)
++loadArenas(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>332</x>
+      <y>124</y>
+      <w>88</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Sprint::SimType
+Classifications for simulations.
+--
+SINGLE
+MULTI</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>320</x>
+      <y>60</y>
+      <w>104</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Sprint::SingleQueue
+Models the simulation of a
+supermarket with different arenas.
+--
+*Attributes*
+--
+*Responsibilities*
+&lt;&lt;contructor&gt;&gt; +SingleQueue(c: int, t: int)
++loadArenas(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>460</x>
+      <y>0</y>
+      <w>124</w>
+      <h>284</h>
+    </coordinates>
+    <panel_attributes>Sprint::Simulation
+Models a supermarket with either
+a single queue or multiple queues.
+--
+*Attributes*
+-day: int
+-simTime: int
+-CONVERSION_FACTOR: int
+-nCustomers: int
+-nTills: int
+-arenas: List&lt;Arena&gt;
+-customers: List&lt;Customer&gt;
+-dayCustomers: List&lt;Customer&gt;
+-potentialThieves: List&lt;Customer&gt;
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Simulation(n: int, t: int)
++getArenas(): List&lt;Arena&gt;
++getAvgQueuing(): double
++getAvgWaiting(): double
++getCustomerList(): List&lt;Customer&gt;
++getDay(): int
++getMaxCustomers(): int
++getNumTills(): int
++getQueueingTimes(): int[]
++getWaitingTimes(): int[]
++isRunning(): boolean
++loadArenas(): void
++loadCustomers(): void
++randomiseList(): void
++resetSimulation(): void
++report(): void
++runSimulation(): void
++setArenas(a: List&lt;Arena&gt;): void
++setCustomerList(c: List&lt;Customer&gt;): void
++setDay(d: int): void
++setMaxCustomers(nCust: int): void
++setNumTills(tills: int): void
+
++mostProfitableCustomers(): void
++theftDetectionReport(): void
++quicksort(low: int, high: int, c: Customer[]): void
++exchange(i: int, j: int, c: Customer[]: void
++detectPotentialThieves(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>412</x>
+      <y>84</y>
+      <w>56</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>48;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>408</x>
+      <y>144</y>
+      <w>60</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>52;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>416</x>
+      <y>208</y>
+      <w>52</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>44;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>416</x>
+      <y>256</y>
+      <w>56</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>44;12;12;12;12;56;48;56</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>272</x>
+      <y>240</y>
+      <w>196</w>
+      <h>164</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>188;12;140;12;140;84;12;84;12;156</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>60</x>
+      <y>180</y>
+      <w>80</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Sprint::Runner
+Executes the program.
+--
+*Attributes*
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Runner()
++main()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>0</x>
+      <y>56</y>
+      <w>108</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;view&gt;&gt;
+Sprint::View
+GUI for the SupermarketSimulation.
+--
+*Attributes*
+
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +View()
+
+
++addRunListener(a: ActionListener): void
++getCustomers(): String
++getCheckouts(): String
++getDays(): String
++initialize(): void
++isSingleQueue(): boolean
++populateHistogram(shopping: double[],
+   queueing: double[]): void
++setVisible(b: boolean): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>252</x>
+      <y>60</y>
+      <w>76</w>
+      <h>68</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;60;12;12;68;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>292</x>
+      <y>216</y>
+      <w>68</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;64;60;64;60;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>0</x>
+      <y>240</y>
+      <w>96</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;controller&gt;&gt;
+Sprint:: Controller
+Acts as an interface between
+the View and the Model.
+--
+*Attributes*
+-model: Model
+-view: View
+--
+*Responsibilities*
++main</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>4</x>
+      <y>312</y>
+      <w>88</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>Controller.ButtonListener
+implements ActionListener and
+listens for button events.
+--
++actionListener()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>4</x>
+      <y>348</y>
+      <w>88</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>Controller.RunListener
+implements ActionListener and
+listens for run button events.
+--
++actionListener()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>20</x>
+      <y>152</y>
+      <w>20</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>12;12;12;88</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>184</x>
+      <y>120</y>
+      <w>120</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;model&gt;&gt;
+Sprint::Model
+Functions to run the simulation and get data
+from it once the simulation finishes running.
+--
+*Attributes*
+-simulation: Simulation
+-singleQueue: Simulation
+-multiQueue: Simulation
+-checkouts: int
+-customers: int
+-days: int
+-singleQ: boolean
+-shoppingTimes: ArrayList&lt;Integer&gt;
+-queueingTimes: ArrayList&lt;Integer&gt;
+--
+*Responsibilities*
+&lt;&lt;constructor&gt;&gt; +Model()
++convertArray(a: int[]): double[]
++getAvgQueueingTime(): double
++getAvgShoppingTime(): double
++getTimesQueueingTime(): double[]
++getTimesShoppingTime(): double[]
++setCustomers(c: int): void
++setCheckouts(c: int): void
++setDays(d: int): void
++setSingleQueue(q: boolean): void
++simulate(): void
+
+
+
+
+
+
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>84</x>
+      <y>268</y>
+      <w>108</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>100;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>96</x>
+      <y>120</y>
+      <w>36</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>12;12;28;12;28;64</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>84</x>
+      <y>216</y>
+      <w>44</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>12;40;36;40;36;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>128</x>
+      <y>184</y>
+      <w>64</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>56;12;12;12</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>448</x>
+      <y>536</y>
+      <w>64</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>12;12;56;12</additional_attributes>
+  </element>
+</diagram>

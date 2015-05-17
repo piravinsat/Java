@@ -1,0 +1,159 @@
+package arenas;
+
+import java.util.Random;
+
+import events.CustomerMove;
+import events.Event;
+
+import agents.Customer;
+
+import simulation.SimType;
+
+
+/**
+ * Arena that takes care of choosing the best destination arena.
+ * <p>
+ * A Policy arena acts as a multiplexer: there are many possible
+ * outputs, and this arena chooses the best one according to a set
+ * attribute.
+ * <p>
+ * For instance, in a single-queue simulation, the best output is
+ * the next available till. In a multi-queue simulation, it's the
+ * shortest queue.
+ * <p>
+ * @author Lestat
+ *
+ */
+public class PolicyArena extends Arena {
+    /**
+     * Represents whether a Customer is scheduled to arrive here.
+     */
+    private boolean locked;
+    /**
+     * Represents whether the current Customer has chosen its destination.
+     */
+    private boolean assigned;
+
+    /* (non-Javadoc)
+     * @see arenas.Arena#initialise()
+     */
+    @Override
+    protected final void initialise() {
+        locked = false;
+        assigned = false;
+    }
+    /**
+     * Returns whether this Arena is empty.
+     * <p>
+     * The arena is considered empty if there are no customers in it
+     * and there are no customers scheduled for arrival.
+     * <p>
+     * @return true if there is a customer here.
+     */
+    protected final boolean isEmpty() {
+        int count = getCustomerList().size();
+        // Customer Count is 0, and arena is not locked.
+        return (count < 1 && !locked);
+    }
+    /* (non-Javadoc)
+     * @see arenas.Arena#removeCustomer(agents.Customer)
+     */
+    @Override
+    public final void removeCustomer(final Customer c) {
+        // Overriding the method to update the flags accordingly
+        locked = false;
+        assigned = false;
+        super.removeCustomer(c);
+    }
+    /* (non-Javadoc)
+     * @see arenas.Arena#setCustomer(agents.Customer)
+     */
+    @Override
+    public final void setCustomer(final Customer c) {
+        // Overriding the method to update the flags accordingly
+        locked = true;
+        assigned = false;
+        super.setCustomer(c);
+    }
+    /**
+     * Locks the current Arena so no other customers may enter.
+     * <p>
+     * This prevents many customers choosing the next available till
+     * at once, which may cause trouble. Instead, the only Customer
+     * allowed to choose is the one at the head of the queue.
+     */
+    protected final void setLock() {
+        locked = true;
+    }
+    /* (non-Javadoc)
+     * @see arenas.Arena#update(int)
+     */
+    @Override
+    public final void update(final int simTime) {
+        int customers = getCustomerList().size();
+        int time = simTime + 1;
+        // Conditions for execution:
+        // There's a customer in the Policy, and it is locked by it.
+        if (customers > 0 && locked) {
+            // Next step depends on the type of simulation
+            if (getSimType() == SimType.SINGLE) {
+                /* Single Queue logic:
+                 * The next arena is a Checkout
+                 * The destination is the next free Checkout */
+                for (Arena a : getLinkedArenas()) {
+                    // Get the customer that will choose.
+                    Customer c = getCustomerList().get(0);
+                    // Type cast to enable using specific checkout methods.
+                    CheckoutArena next = (CheckoutArena) a;
+                    // checkout is empty, no customers traversing there
+                    if (next.isEmpty() && !assigned) {
+                        // Schedule Move
+                        Event ev = new CustomerMove(time, c, next, this);
+                        ev.schedule();
+                        // Set the flag
+                        assigned = true;
+                        // Don't check for free tills anymore
+                        break;
+                    }
+                }
+
+            } else {
+                /* Multiple Queue logic:
+                 * The next arena is a Queue
+                 * The destination is the shortest queue.*/
+                for (Customer c : getCustomerList()) {
+                    if (!c.isMoving()) {
+                        Arena destination = shortestQueue();
+                        Event move = new CustomerMove(time,
+                                c, destination, this);
+                        move.schedule();
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Routine that determines which queue is the shortest.
+     * <p>
+     * It is important that this method is called only if the simulation
+     * type is Multi-queue, since it's sure that the arenas linked to the
+     * current one are QueueArenas.
+     * <p>
+     * @return the instance of the shortest QueueArena.
+     */
+    private Arena shortestQueue() {
+        Arena shortest = null;
+        for (Arena queue : getLinkedArenas()) {
+            if (shortest == null) {
+                shortest = queue;
+            } else {
+                int s = shortest.getCustomerList().size();
+                int t = queue.getCustomerList().size();
+                if (t <= s) {
+                    shortest = queue;
+                }
+            }
+        }
+        return shortest;
+    }
+}

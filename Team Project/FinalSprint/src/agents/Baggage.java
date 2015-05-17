@@ -1,0 +1,297 @@
+package agents;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Class that holds the history, physical or otherwise, of an agent.
+ * <p>
+ * Baggage is mostly a collection of time values, that correspond to
+ * different waiting times in different contexts. Each Customer has
+ * its own history of waiting times, therefore every Customer has its
+ * own Baggage object.
+ * <p>
+ * @author Piravin Satkunarajah
+ * @author Luigi Pardey
+ * @see Customer
+ */
+public class Baggage {
+    /**
+     * The number of times the customer has visited the supermarket.
+     */
+    private int visits = 0;
+    /**
+     * Cumulative queueing times.
+     */
+    private int cumulativeQueueing = 0;
+    /**
+     * The customers shopping basket.
+     */
+    private List<Product> basket;
+    /**
+     * List of products that the customer that owns this baggage will find in
+     * the supermarket floor (aisles) so they are purchased.
+     */
+    private List<Integer> shoppingList;
+    /**
+     * Class variable that acts as the incremental counter for generating
+     * new unique number identifiers.
+     */
+    private static int baggageIDCounter = 0;
+    /**
+     * The unique ID of this instance.
+     */
+    private int baggageID;
+    /**
+     * Time when the customer entered the arena it's in.
+     */
+    private int enteredArena;
+    /**
+     * Time at which the Customer was created.
+     */
+    private int timeStarted;
+    /**
+     * Time at which the customer finishes the simulation.
+     */
+    private int timeFinished;
+    /**
+     * Time the customer has spent in the shop.
+     */
+    private int timeShopping;
+    /**
+     * Time the customer has spent queueing.
+     */
+    private int timeQueueing;
+    /**
+     * Time that the customer has spent in its current position (arena).
+     */
+    private int timeInArena;
+    /**
+     * Constructor to give an ID to the baggage.
+     */
+    public Baggage() {
+        baggageID = baggageIDCounter++;
+        basket = new ArrayList<Product>();
+        shoppingList = new ArrayList<Integer>();
+    }
+    /**
+     * Returns the number of items currently in the customer's
+     * item basket.
+     * <p>
+     * @return the number of items in the basket.
+     */
+    public final int getItems() {
+        return basket.size();
+    }
+
+    /**
+     * Gets the ID number that uniquely identifies each Baggage.
+     * <p>
+     * @return Gets the unique ID of the baggage.
+     */
+    public final int getID() {
+        return baggageID;
+    }
+    /**
+     * Adds a product to the customers basket.
+     * @param p The product to be added to the basket.
+     */
+    public final void addToBasket(final Product p) {
+        basket.add(p);
+    }
+    /**
+     * Adds a set amount of time into the counter that represents the time
+     * that the customer has been waiting in the current Arena.
+     * <p>
+     * @param time the amount of time to add.
+     */
+    public final void addTimeInArena(final int time) {
+        this.timeInArena += time;
+    }
+    /**
+     * Adds a set amount of time into the counter that represents the time
+     * that the customer has been waiting in the queue and at the checkout.
+     * <p>
+     * @param time the amount of time to add.
+     */
+    public final void addTimeQueueing(final int time) {
+        this.timeQueueing += time;
+    }
+    /**
+     * Adds a set amount of time into the counter that represents the time
+     * that the customer has been shopping in the supermarket.
+     * <p>
+     * @param time the amount of time to add.
+     */
+    public final void addTimeShopping(final int time) {
+        this.timeShopping += time;
+    }
+    /**
+     * Returns the mean time that the customer that owns this baggage waits
+     * in queue.
+     * <p>
+     * @return the average queueing time.
+     */
+    public final double getAverageQueueing() {
+        if (visits > 0) {
+            return cumulativeQueueing / visits;
+        } else {
+            return 0;
+        }
+    }
+    /**
+     * Returns the list of products present in this baggage.
+     * <p>
+     * The products in this baggage correspond to the items that the
+     * Customer that owns it has picked up from the supermarket shelves.
+     * <p>
+     * @return The customers basket.
+     */
+    public final List<Product> getBasket() {
+        return basket;
+    }
+    /**
+     * Returns the list of products that the customer that owns this baggage
+     * will look for in the supermarket.
+     * <p>
+     * @return the shopping list.
+     */
+    public final List<Integer> getShoppingList() {
+        return shoppingList;
+    }
+    /**
+     * Gets the time at which the customer entered the current Arena.
+     * <p>
+     * @return the time the customer entered the Arena
+     */
+    public final int getEnteredArena() {
+        return enteredArena;
+    }
+    /**
+     * Gets the time at which the Customer reached the end of the simulation.
+     * <p>
+     * @return the timeFinished
+     */
+    public final int getTimeFinished() {
+        return timeFinished;
+    }
+    /**
+     * Returns the time the customer has spent in the Arena they're in.
+     * <p>
+     * @return the time in the current Arena
+     */
+    public final int getTimeInArena() {
+        return timeInArena;
+    }
+    /**
+     * Returns the time the customer has spent queueing in the supermarket.
+     * <p>
+     * This time also includes the time waiting at the checkout while being
+     * served by a cashier.
+     * <p>
+     * @return the time queueing
+     */
+    public final int getTimeQueueing() {
+        return timeQueueing;
+    }
+    /**
+     * Returns the time the customer has spent in the supermarket doing
+     * its shopping.
+     * <p>
+     * This is equivalent to the total time the customer has been in the
+     * supermarket.
+     * <p>
+     * @return the time shopping
+     */
+    public final int getTimeShopping() {
+        return timeShopping;
+    }
+    /**
+     * Returns the time at which the customer was created.
+     * <p>
+     * @return the time when it was created
+     */
+    public final int getTimeStarted() {
+        return timeStarted;
+    }
+    /**
+     * Sets the time at which the customer entered the current Arena.
+     * <p>
+     * @param time the time the customer entered the Arena1
+     */
+    public final void setEnteredArena(final int time) {
+        this.enteredArena = time;
+    }
+    /**
+     * Sets the time at which the customer reached the end of the simulation.
+     * <p>
+     * @param time the timeFinished to set
+     */
+    public final void setTimeFinished(final int time) {
+        this.timeFinished = time;
+    }
+    /**
+     * Sets the time that the customer has been in the Arena that currently
+     * holds it.
+     * <p>
+     * @param tArena the timeInArena to set
+     */
+    public final void setTimeInArena(final int tArena) {
+        this.timeInArena = tArena;
+    }
+    /**
+     * Sets the time that the customer has been queueing at the till.
+     * <p>
+     * @param tQueueing the timeQueueing to set
+     */
+    public final void setTimeQueueing(final int tQueueing) {
+        this.timeQueueing = tQueueing;
+    }
+    /**
+     * Sets the time that the customer has been shopping in the supermarket.
+     * <p>
+     * @param tShopping the timeShopping to set
+     */
+    public final void setTimeShopping(final int tShopping) {
+        this.timeShopping = tShopping;
+    }
+    /**
+     * Sets the time at which the customer enters the Supermarket.
+     * <p>
+     * @param tStarted the timeStarted to set.
+     */
+    public final void setTimeStarted(final int tStarted) {
+        this.timeStarted = tStarted;
+    }
+    /**
+     * Resets the times of this baggage back to their defaults.
+     */
+    public final void reset() {
+        enteredArena = 0;
+        timeStarted = 0;
+        timeFinished = 0;
+        timeShopping = 0;
+        timeQueueing = 0;
+        timeInArena = 0;
+        basket.clear();
+        shoppingList.clear();
+    }
+    /**
+     * Updates the average queueing time of this customer.
+     */
+    public final void updateAverages() {
+        cumulativeQueueing += timeQueueing;
+    }
+    /**
+     * @return The number of times the customer has visited the store.
+     */
+    public final int getVisits() {
+        return visits;
+    }
+    /**
+     * Adds one to the number of times the customer has visited the store.
+     */
+    public final void incrementVisits() {
+        visits++;
+    }
+}
